@@ -8,6 +8,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -37,7 +38,8 @@ fun LoginScreen() {
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
-                autoCorrectEnabled = false
+                autoCorrectEnabled = false,
+                capitalization = KeyboardCapitalization.None
             )
         )
 
@@ -52,7 +54,8 @@ fun LoginScreen() {
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
-                autoCorrectEnabled = false
+                autoCorrectEnabled = false,
+                capitalization = KeyboardCapitalization.None
             )
         )
 
