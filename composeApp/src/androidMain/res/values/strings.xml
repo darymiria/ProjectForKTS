@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">ProjectForKTS</string>
+    <string name="welcome_title">Добро пожаловать!</string>
+    <string name="start_button">Начать</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="enter_to_sistem">Вход в систему</string>
+    <string name="login_button">Войти</string>
+    <string name="success">Успешно</string>
 </resources>
