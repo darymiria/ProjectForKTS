@@ -26,10 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.lazy.items
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.projectforkts.ui.GitHubTheme
-import org.jetbrains.compose.resources.vectorResource
+import org.jetbrains.compose.resources.painterResource
+import projectforkts.composeapp.generated.resources.stars
+import androidx.compose.foundation.Image
 
 @Composable
 fun MainScreen(
@@ -59,11 +60,10 @@ fun RepoItemCard(repo: RepoItem) {
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = repo.avatarUrl,
+            Image(
+                painter = painterResource(Res.drawable.stars),
                 contentDescription = null,
-                modifier = Modifier.size(48.dp),
-                error = rememberVectorPainter(vectorResource(Res.drawable.ic_error))
+                modifier = Modifier.size(48.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
