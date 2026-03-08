@@ -1,4 +1,4 @@
-package com.example.projectforkts.presentation.login
+package com.example.projectforkts.login.presentation
 
 data class LoginUiState(
     val username: String = "",

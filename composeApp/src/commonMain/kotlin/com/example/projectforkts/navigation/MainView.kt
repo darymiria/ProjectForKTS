@@ -1,13 +1,13 @@
-package com.example.projectforkts.presentation.navigation
+package com.example.projectforkts.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projectforkts.ui.GitHubTheme
-import com.example.projectforkts.presentation.login.LoginScreen
-import com.example.projectforkts.presentation.main.MainScreen
-import com.example.projectforkts.presentation.welcome.WelcomeScreen
+import com.example.projectforkts.login.presentation.LoginScreen
+import com.example.projectforkts.main.presentation.MainScreen
+import com.example.projectforkts.welcome.WelcomeScreen
 
 @Composable
 fun MainView() {

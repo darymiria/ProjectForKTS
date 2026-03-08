@@ -1,9 +1,10 @@
-package com.example.projectforkts.repository
+package com.example.projectforkts.main.data
 
-import com.example.projectforkts.presentation.main.RepoItem
+import com.example.projectforkts.main.domain.RepoRepository
+import com.example.projectforkts.main.presentation.RepoItem
 
-class RepoRepository {
-    fun getList(): Result<List<RepoItem>> {
+class RepoRepositoryImpl: RepoRepository {
+    override fun getList(): Result<List<RepoItem>> {
         return Result.success(
             List(20) { index ->
                 RepoItem(

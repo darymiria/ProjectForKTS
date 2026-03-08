@@ -1,8 +1,6 @@
-package com.example.projectforkts.presentation.main
+package com.example.projectforkts.main.presentation
 
 import projectforkts.composeapp.generated.resources.Res
-import projectforkts.composeapp.generated.resources.ic_error
-import coil3.compose.AsyncImage
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues

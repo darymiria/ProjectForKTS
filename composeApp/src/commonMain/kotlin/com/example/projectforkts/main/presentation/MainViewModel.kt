@@ -1,12 +1,12 @@
-package com.example.projectforkts.presentation.main
+package com.example.projectforkts.main.presentation
 
 import androidx.lifecycle.ViewModel
-import com.example.projectforkts.repository.RepoRepository
+import com.example.projectforkts.main.data.RepoRepositoryImpl
+import com.example.projectforkts.main.domain.RepoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.serialization.internal.throwMissingFieldException
 
 data class MainUiState(
     val items: List<RepoItem> = emptyList(),
@@ -24,7 +24,7 @@ data class RepoItem(
 
 class MainViewModel : ViewModel() {
 
-    private val repoRepository = RepoRepository()
+    private val repoRepository: RepoRepository = RepoRepositoryImpl()
 
     private val _state = MutableStateFlow(MainUiState())
     val state: StateFlow<MainUiState> = _state.asStateFlow()
