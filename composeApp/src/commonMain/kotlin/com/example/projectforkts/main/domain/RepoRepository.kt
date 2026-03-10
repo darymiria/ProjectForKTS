@@ -1,8 +1,6 @@
 package com.example.projectforkts.main.domain
 
-import com.example.projectforkts.main.presentation.RepoItem
-
-
+import com.example.projectforkts.main.domain.RepoItem
 interface RepoRepository {
-    fun getList(): Result<List<RepoItem>>
+    suspend fun searchRepos(query: String, page: Int): Result<List<RepoItem>>
 }

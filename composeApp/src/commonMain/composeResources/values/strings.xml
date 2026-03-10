@@ -9,4 +9,9 @@
     <string name="success">Успешно</string>
     <string name="error_invalid_credentials">Неверный логин или пароль</string>
     <string name="welcome_description">Исследуйте репозитории, отслеживайте активность</string>
+    <string name="repos_not_found">Репозитории не найдены</string>
+    <string name="cached_data_banner">Показаны сохранённые данные</string>
+    <string name="retry_button">Повторить</string>
+    <string name="loading">Загрузка...</string>
+    <string name="search">Поиск</string>
 </resources>

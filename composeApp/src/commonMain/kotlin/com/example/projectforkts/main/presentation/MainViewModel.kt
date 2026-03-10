@@ -1,45 +1,104 @@
 package com.example.projectforkts.main.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.projectforkts.main.data.RepoRepositoryImpl
 import com.example.projectforkts.main.domain.RepoRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-data class MainUiState(
-    val items: List<RepoItem> = emptyList(),
-    val error: String? = null
-)
 
-data class RepoItem(
-    val id: Long,
-    val name: String,
-    val description: String,
-    val stars: Int,
-    val owner: String,
-    val avatarUrl: String? = null
-)
-
-class MainViewModel : ViewModel() {
-
-    private val repoRepository: RepoRepository = RepoRepositoryImpl()
+class MainViewModel(private val repoRepository: RepoRepository = RepoRepositoryImpl()) : ViewModel() {
 
     private val _state = MutableStateFlow(MainUiState())
     val state: StateFlow<MainUiState> = _state.asStateFlow()
+    private val _query = MutableStateFlow("kotlin")
 
-    init {
-        loadRepos()
+    fun onQueryChanged(query: String){
+        _state.update{it.copy(query = query)}
+        _query.value = query
     }
 
-    private fun loadRepos() {
-        repoRepository.getList()
-            .onSuccess { items ->
-                _state.update { it.copy(items = items) }
+    init{
+        viewModelScope.launch {
+            _query
+                .debounce(500L)
+                .flatMapLatest { query ->
+                    flow{
+                        _state.update { it.copy(isLoading = true, error = null, currentPage = 1) }
+                        repoRepository.searchRepos(query, page = 1)
+                            .onSuccess { items ->
+                                _state.update {
+                                    it.copy(
+                                        items = items,
+                                        isLoading = false,
+                                        currentPage = 1,
+                                        hasNextPage = items.size == 20,
+                                        isFromCache = false,
+                                        query = query,
+                                    )
+                                }
+                            }
+                            .onFailure { exception ->
+                                _state.update {
+                                    it.copy(
+                                        isLoading = false,
+                                        error = exception.message,
+                                        isFromCache = it.items.isNotEmpty()
+                                    )
+                                }
+                            }
+                        emit(Unit)
+                    }
+                }
+                .collect()
+        }
+    }
+    private var searchJob: Job? = null
+
+
+    fun loadNextPage() {
+        val current = _state.value
+        if (!current.isLoading && current.hasNextPage) {
+            viewModelScope.launch {
+                _state.update { it.copy(isLoading = true) }
+                repoRepository.searchRepos(current.query, current.currentPage + 1)
+                    .onSuccess { items ->
+                        _state.update {
+                            it.copy(
+                                items = items,
+                                isLoading = false,
+                                currentPage = 1,
+                                hasNextPage = items.size == 20,
+                            )
+                        }
+                    }
+                    .onFailure { exception ->
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                error = exception.message,
+                            )
+                        }
+                    }
             }
-            .onFailure { exception ->
-                _state.update { it.copy(error = exception.message) }
-            }
+        }
+    }
+
+    fun retry() {
+        _query.value = _state.value.query
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        searchJob?.cancel()
     }
 }

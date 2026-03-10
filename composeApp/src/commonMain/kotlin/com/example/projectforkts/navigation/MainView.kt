@@ -15,22 +15,22 @@ fun MainView() {
         val navController = rememberNavController()
         NavHost(
             navController = navController,
-            startDestination = "welcome"
+            startDestination = WelcomeScreen
         ) {
-            composable("welcome") {
+            composable<WelcomeScreen> {
                 WelcomeScreen(
-                    onLoginClick = { navController.navigate("login") }
+                    onLoginClick = { navController.navigate(LoginScreen) }
                 )
             }
-            composable("login") {
+            composable<LoginScreen> {
                 LoginScreen(onLoginSuccess = {
-                    navController.navigate("main") {
-                        popUpTo("welcome") { inclusive = true }
+                    navController.navigate(MainScreen) {
+                        popUpTo<WelcomeScreen> { inclusive = true }
                     }
                 }
                 )
             }
-            composable("main") {
+            composable<MainScreen> {
                 MainScreen()
             }
         }
