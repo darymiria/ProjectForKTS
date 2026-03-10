@@ -1,5 +1,6 @@
-package com.example.projectforkts.presentation.login
+package com.example.projectforkts.login.presentation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -20,12 +22,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.projectforkts.ui.GitHubTheme
+import org.jetbrains.compose.resources.painterResource
 
 import projectforkts.composeapp.generated.resources.ic_error
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import projectforkts.composeapp.generated.resources.Res
+import projectforkts.composeapp.generated.resources.dark_logo
 import projectforkts.composeapp.generated.resources.enter_to_sistem
+import projectforkts.composeapp.generated.resources.light_logo
 import projectforkts.composeapp.generated.resources.login
 import projectforkts.composeapp.generated.resources.password
 import projectforkts.composeapp.generated.resources.login_button
@@ -76,21 +81,15 @@ fun LoginScreen(
         }
     }
 }
-private fun getLogoUrl(isDark: Boolean) = if (isDark) {
-    "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark-Light.png"
-} else {
-    "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-}
+
 @Composable
 private fun LoginHeader() {
     val isDark = isSystemInDarkTheme()
-    val logoUrl = remember(isDark) { getLogoUrl(isDark) }
 
-    AsyncImage(
-        model = logoUrl,
+    Image(
+        painter = (if (isDark) {painterResource(Res.drawable.dark_logo)} else {painterResource(Res.drawable.light_logo)}),
         contentDescription = null,
-        modifier = Modifier.size(80.dp),
-        error = rememberVectorPainter(vectorResource(Res.drawable.ic_error))
+        modifier = Modifier.size(400.dp)
     )
     Spacer(modifier = Modifier.height(24.dp))
     Text(

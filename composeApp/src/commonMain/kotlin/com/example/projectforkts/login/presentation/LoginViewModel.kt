@@ -1,7 +1,9 @@
-package com.example.projectforkts.presentation.login
+package com.example.projectforkts.login.presentation
 
 import androidx.lifecycle.ViewModel
-import com.example.projectforkts.repository.LoginRepository
+import com.example.projectforkts.login.presentation.LoginUiState
+import com.example.projectforkts.login.data.LoginRepositoryImpl
+import com.example.projectforkts.login.domain.LoginRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -9,14 +11,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import projectforkts.composeapp.generated.resources.Res
-import projectforkts.composeapp.generated.resources.error_invalid_credentials
 
 sealed class LoginUiEvent {
     data object LoginSuccess : LoginUiEvent()
 }
 
-private val loginRepository = LoginRepository()
+private val loginRepository: LoginRepository = LoginRepositoryImpl()
 class LoginViewModel : ViewModel() {
 
     private val _state = MutableStateFlow(LoginUiState())
