@@ -49,7 +49,8 @@ import projectforkts.composeapp.generated.resources.stars
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
+    onUnauthorized: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val listState = rememberLazyListState()
@@ -65,6 +66,11 @@ fun MainScreen(
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore && !state.isLoading && state.hasNextPage) {
             viewModel.loadNextPage()
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.unauthorizedEvent.collect {
+            onUnauthorized()
         }
     }
     LazyColumn(

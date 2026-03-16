@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.projectforkts.main.data.RepoRepositoryImpl
 import com.example.projectforkts.main.domain.RepoRepository
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,12 +13,15 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
 class MainViewModel(private val repoRepository: RepoRepository = RepoRepositoryImpl()) : ViewModel() {
 
+    private val _unauthorizedEvent = Channel<Unit>(Channel.BUFFERED)
+    val unauthorizedEvent = _unauthorizedEvent.receiveAsFlow()
     private val _state = MutableStateFlow(MainUiState())
     val state: StateFlow<MainUiState> = _state.asStateFlow()
     private val _query = MutableStateFlow("kotlin")
@@ -48,12 +52,16 @@ class MainViewModel(private val repoRepository: RepoRepository = RepoRepositoryI
                                 }
                             }
                             .onFailure { exception ->
-                                _state.update {
-                                    it.copy(
-                                        isLoading = false,
-                                        error = exception.message,
-                                        isFromCache = it.items.isNotEmpty()
-                                    )
+                                if (exception is RepoRepositoryImpl.UnauthorizedException) {
+                                    _unauthorizedEvent.send(Unit)
+                                } else {
+                                    _state.update {
+                                        it.copy(
+                                            isLoading = false,
+                                            error = exception.message,
+                                            isFromCache = it.items.isNotEmpty()
+                                        )
+                                    }
                                 }
                             }
                         emit(Unit)

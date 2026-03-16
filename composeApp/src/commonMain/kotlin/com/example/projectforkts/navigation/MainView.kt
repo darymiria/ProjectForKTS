@@ -5,12 +5,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projectforkts.ui.GitHubTheme
-import com.example.projectforkts.login.presentation.LoginScreen
 import com.example.projectforkts.main.presentation.MainScreen
 import com.example.projectforkts.welcome.WelcomeScreen
 
 @Composable
-fun MainView() {
+fun MainView(loginScreen: @Composable (onLoginSuccess: () -> Unit) -> Unit
+) {
     GitHubTheme {
         val navController = rememberNavController()
         NavHost(
@@ -23,15 +23,21 @@ fun MainView() {
                 )
             }
             composable<LoginScreen> {
-                LoginScreen(onLoginSuccess = {
+                loginScreen{
                     navController.navigate(MainScreen) {
-                        popUpTo<WelcomeScreen> { inclusive = true }
+                        popUpTo(navController.graph.id) {inclusive = true}
                     }
                 }
-                )
+
             }
             composable<MainScreen> {
-                MainScreen()
+                MainScreen(
+                    onUnauthorized = {
+                        navController.navigate(LoginScreen) {
+                            popUpTo(navController.graph.id) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
     }

@@ -18,6 +18,7 @@ ktor = "3.0.0"
 androidx-navigation = "2.8.0-alpha10"
 runtime = "1.10.3"
 napier = "2.7.1"
+appauth = "0.11.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -50,6 +51,9 @@ kotlinx-serialization-json = {module = "org.jetbrains.kotlinx:kotlinx-serializat
 ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
+appauth = { module = "net.openid:appauth", version.ref = "appauth" }
+androidx-browser = { module = "androidx.browser:browser", version = "1.8.0" }
+ktor-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

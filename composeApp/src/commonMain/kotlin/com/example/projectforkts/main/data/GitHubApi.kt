@@ -11,6 +11,10 @@ import io.ktor.client.request.parameter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import io.ktor.client.plugins.logging.Logger
+import com.example.projectforkts.main.data.TokenStorage
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
 
 
 object GitHubApi{
@@ -26,6 +30,18 @@ object GitHubApi{
             }
             level = LogLevel.BODY
         }
+        install(Auth)
+        {
+            bearer {
+                loadTokens {
+                    BearerTokens(
+                        accessToken = TokenStorage.accessToken ?: "",
+                        refreshToken = ""
+                    )
+                }
+                sendWithoutRequest { true }
+            }
+        }
     }
     suspend fun searchRepos( query: String, page: Int, perPage: Int = 20): SearchResponse {
         return client.get("https://api.github.com/search/repositories") {
@@ -36,3 +52,4 @@ object GitHubApi{
     }
 
 }
+
