@@ -2,6 +2,8 @@ package com.example.projectforkts.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.projectforkts.AppStorage
 import com.example.projectforkts.main.data.GitHubApi
 import com.example.projectforkts.main.data.UserResponse
@@ -43,7 +45,16 @@ class ProfileViewModel(
             _logoutEvent.send(Unit)
         }
     }
+    companion object {
+        fun factory(appStorage: AppStorage) = viewModelFactory {
+            initializer {
+                ProfileViewModel(appStorage = appStorage)
+            }
+        }
+    }
 }
+
+
 
 data class ProfileUiState(
     val profile: UserResponse? = null,

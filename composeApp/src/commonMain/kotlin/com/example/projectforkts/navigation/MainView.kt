@@ -1,7 +1,6 @@
 package com.example.projectforkts.navigation
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
 
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -17,19 +16,20 @@ import com.example.projectforkts.main.presentation.MainScreen
 import com.example.projectforkts.welcome.WelcomeScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavDestination.Companion.hierarchy
 import com.example.projectforkts.profile.presentation.ProfileScreen
 import org.jetbrains.compose.resources.stringResource
 import projectforkts.composeapp.generated.resources.Res
 import projectforkts.composeapp.generated.resources.profile_tab
 import projectforkts.composeapp.generated.resources.repos_tab
 import androidx.navigation.NavDestination.Companion.hasRoute
+import com.example.projectforkts.AppStorage
 
 @Composable
 fun MainView(
     startDestination: Any = WelcomeScreen,
     loginScreen: @Composable (onLoginSuccess: () -> Unit) -> Unit,
-    onOnboardingComplete: () -> Unit
+    onOnboardingComplete: () -> Unit,
+    appStorage: AppStorage
 ) {
     GitHubTheme {
         val navController = rememberNavController()
@@ -54,12 +54,13 @@ fun MainView(
 
             }
             composable<MainScreen> {
-                MainScreen(
+                MainScreenWithBottomNav(
                     onUnauthorized = {
                         navController.navigate(LoginScreen) {
                             popUpTo(navController.graph.id) { inclusive = true }
                         }
-                    }
+                    },
+                    appStorage = appStorage
                 )
             }
         }
@@ -67,7 +68,7 @@ fun MainView(
 }
 
 @Composable
-fun MainScreenWithBottomNav(onUnauthorized: () -> Unit) {
+fun MainScreenWithBottomNav(onUnauthorized: () -> Unit, appStorage: AppStorage) {
     val bottomNavController = rememberNavController()
     val currentDestination by bottomNavController.currentBackStackEntryAsState()
 
@@ -110,7 +111,7 @@ fun MainScreenWithBottomNav(onUnauthorized: () -> Unit) {
                 MainScreen(onUnauthorized = onUnauthorized)
             }
             composable<ProfileScreen> {
-                ProfileScreen(onLogout = onUnauthorized)
+                ProfileScreen(onLogout = onUnauthorized, appStorage = appStorage)
             }
         }
     }
