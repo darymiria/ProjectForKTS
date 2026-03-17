@@ -7,14 +7,16 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
-    androidTarget {
+   androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+
     
 //    listOf(
 //        iosArm64(),
@@ -33,6 +35,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.appauth)
             implementation(libs.androidx.browser)
+            implementation(libs.datastore.android)
+
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -54,6 +58,8 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.logging)
             implementation(libs.ktor.auth)
+            implementation(libs.datastore.preferences)
+            implementation(libs.room.runtime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -73,6 +79,9 @@ android {
         versionName = "1.0"
         manifestPlaceholders["appAuthRedirectScheme"] = "com.example.projectforkts"
     }
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -91,6 +100,8 @@ android {
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+    add("kspAndroid", libs.room.compiler)
+
 
 }
 

@@ -10,4 +10,5 @@ data class MainUiState(
     val currentPage: Int = 1,
     val hasNextPage: Boolean = true,
     val query: String = "kotlin",
+    val isRefreshing: Boolean = false
 )
