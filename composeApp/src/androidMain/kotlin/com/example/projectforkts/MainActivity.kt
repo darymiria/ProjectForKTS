@@ -64,6 +64,7 @@ class MainActivity : ComponentActivity() {
                         appStorage.setOnboardingCompleted()
                     }
                 },
+                appStorage = appStorage,
                 loginScreen = { onLoginSuccess ->
                 LoginScreen(onLoginSuccess = onLoginSuccess,
                     viewModel = viewModel
