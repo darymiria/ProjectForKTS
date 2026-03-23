@@ -17,6 +17,8 @@ coil = "3.0.4"
 ktor = "3.0.0"
 androidx-navigation = "2.8.0-alpha10"
 runtime = "1.10.3"
+napier = "2.7.1"
+appauth = "0.11.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -40,8 +42,18 @@ androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navi
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-serialization = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor"}
+ktor-serialization-json = {module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor"}
+napier = {module = "io.github.aakira:napier", version.ref = "napier"}
+ktor-client-core = {module = "io.ktor:ktor-client-core", version.ref = "ktor"}
+ktor-client-content-negotiation = {module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor"}
+kotlinx-serialization-json = {module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.1"}
+ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
+appauth = { module = "net.openid:appauth", version.ref = "appauth" }
+androidx-browser = { module = "androidx.browser:browser", version = "1.8.0" }
+ktor-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -49,3 +61,4 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
