@@ -1,4 +1,4 @@
-package com.example.projectforkts.main.data
+package com.example.projectforkts.main.data.db
 
 import android.content.Context
 import androidx.room.Room

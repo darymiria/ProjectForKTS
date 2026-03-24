@@ -1,7 +1,12 @@
 package com.example.projectforkts.main.data
 
-import com.example.projectforkts.main.domain.RepoItem
-import com.example.projectforkts.main.domain.RepoRepository
+import com.example.projectforkts.main.data.db.AppDatabase
+import com.example.projectforkts.main.data.db.RepoEntity
+import com.example.projectforkts.main.data.db.createDatabase
+import com.example.projectforkts.main.data.network.GitHubApi
+import com.example.projectforkts.main.data.network.RepoResponse
+import com.example.projectforkts.main.domain.model.RepoItem
+import com.example.projectforkts.main.domain.repository.RepoRepository
 
 class RepoRepositoryImpl(private val database: AppDatabase = createDatabase()): RepoRepository {
     private val dao = database.repoDao()

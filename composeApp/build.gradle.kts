@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.appauth)
             implementation(libs.androidx.browser)
             implementation(libs.datastore.android)
+            implementation(libs.koin.android)
 
         }
         commonMain.dependencies {
@@ -60,6 +61,9 @@ kotlin {
             implementation(libs.ktor.auth)
             implementation(libs.datastore.preferences)
             implementation(libs.room.runtime)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -40,9 +40,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import coil3.compose.AsyncImage
-import com.example.projectforkts.main.domain.RepoItem
+import com.example.projectforkts.main.domain.model.RepoItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 import projectforkts.composeapp.generated.resources.cached_data_banner
 import projectforkts.composeapp.generated.resources.repos_not_found
 import projectforkts.composeapp.generated.resources.retry_button
@@ -51,8 +52,8 @@ import projectforkts.composeapp.generated.resources.stars
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = viewModel(),
-    onUnauthorized: () -> Unit
+    onUnauthorized: () -> Unit,
+    viewModel: MainViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val listState = rememberLazyListState()

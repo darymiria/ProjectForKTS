@@ -33,13 +33,13 @@ import projectforkts.composeapp.generated.resources.following_label
 import projectforkts.composeapp.generated.resources.logout_button
 import projectforkts.composeapp.generated.resources.repos_label
 import androidx.compose.runtime.getValue
-import com.example.projectforkts.AppStorage
+import com.example.projectforkts.core.AppStorage
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProfileScreen(
     onLogout: () -> Unit,
-    appStorage: AppStorage,
-    viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.factory(appStorage))
+    viewModel: ProfileViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 

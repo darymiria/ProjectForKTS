@@ -1,4 +1,4 @@
-package com.example.projectforkts.main.data
+package com.example.projectforkts.main.data.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,4 +14,3 @@ data class RepoEntity(
     val avatarUrl: String?,
     val query: String
 )
-

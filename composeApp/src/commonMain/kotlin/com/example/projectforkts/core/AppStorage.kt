@@ -1,14 +1,14 @@
-package com.example.projectforkts
+package com.example.projectforkts.core
 
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.projectforkts.main.data.TokenStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class AppStorage(private val dataStore: DataStore<androidx.datastore.preferences.core.Preferences>) {
+class AppStorage(private val dataStore: DataStore<Preferences>) {
 
     companion object {
         private val ONBOARDING_KEY = booleanPreferencesKey("onboarding_completed")
@@ -16,7 +16,7 @@ class AppStorage(private val dataStore: DataStore<androidx.datastore.preferences
     }
 
     val isOnboardingCompleted: Flow<Boolean> = dataStore.data
-        .map{ it[ONBOARDING_KEY] ?: false }
+        .map { it[ONBOARDING_KEY] ?: false }
 
     suspend fun setOnboardingCompleted() {
         dataStore.edit { it[ONBOARDING_KEY] = true }

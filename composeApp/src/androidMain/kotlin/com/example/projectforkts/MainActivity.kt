@@ -17,8 +17,9 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
-import com.example.projectforkts.main.data.TokenStorage
-import com.example.projectforkts.main.data.appContext
+import com.example.projectforkts.core.AppStorage
+import com.example.projectforkts.core.TokenStorage
+import com.example.projectforkts.main.data.db.appContext
 import com.example.projectforkts.navigation.LoginScreen
 import com.example.projectforkts.navigation.MainScreen
 import com.example.projectforkts.navigation.WelcomeScreen

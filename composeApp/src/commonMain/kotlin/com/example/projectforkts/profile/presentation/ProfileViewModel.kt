@@ -2,11 +2,9 @@ package com.example.projectforkts.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.projectforkts.AppStorage
-import com.example.projectforkts.main.data.GitHubApi
-import com.example.projectforkts.main.data.UserResponse
+import com.example.projectforkts.profile.domain.GetProfileUseCase
+import com.example.projectforkts.profile.domain.LogoutUseCase
+import com.example.projectforkts.profile.presentation.ProfileUiState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +14,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
-    private val appStorage: AppStorage
+    private val getProfileUseCase: GetProfileUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileUiState())
@@ -29,35 +28,22 @@ class ProfileViewModel(
 
     fun loadProfile() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-            try {
-                val profile = GitHubApi.getUserProfile()
-                _state.update { it.copy(isLoading = false, profile = profile) }
-            } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.message) }
-            }
+            getProfileUseCase()
+                .onSuccess { userProfile ->
+                    _state.update { it.copy(isLoading = false, profile = userProfile) }
+                }
+                .onFailure { e -> _state.update { it.copy(isLoading = false, error = e.message) } }
         }
     }
 
     fun logout() {
         viewModelScope.launch {
-            appStorage.clearToken()
+            logoutUseCase()
             _logoutEvent.send(Unit)
         }
     }
-    companion object {
-        fun factory(appStorage: AppStorage) = viewModelFactory {
-            initializer {
-                ProfileViewModel(appStorage = appStorage)
-            }
-        }
-    }
+
 }
 
 
 
-data class ProfileUiState(
-    val profile: UserResponse? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null
-)

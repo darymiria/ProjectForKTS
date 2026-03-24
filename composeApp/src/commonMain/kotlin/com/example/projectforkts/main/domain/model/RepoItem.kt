@@ -1,4 +1,4 @@
-package com.example.projectforkts.main.domain
+package com.example.projectforkts.main.domain.model
 
 data class RepoItem(
     val id: Long,

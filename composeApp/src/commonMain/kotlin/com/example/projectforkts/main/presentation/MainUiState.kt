@@ -1,6 +1,6 @@
 package com.example.projectforkts.main.presentation
 
-import com.example.projectforkts.main.domain.RepoItem
+import com.example.projectforkts.main.domain.model.RepoItem
 
 data class MainUiState(
     val items: List<RepoItem> = emptyList(),

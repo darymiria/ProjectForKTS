@@ -22,7 +22,7 @@ import projectforkts.composeapp.generated.resources.Res
 import projectforkts.composeapp.generated.resources.profile_tab
 import projectforkts.composeapp.generated.resources.repos_tab
 import androidx.navigation.NavDestination.Companion.hasRoute
-import com.example.projectforkts.AppStorage
+import com.example.projectforkts.core.AppStorage
 
 @Composable
 fun MainView(
@@ -111,7 +111,7 @@ fun MainScreenWithBottomNav(onUnauthorized: () -> Unit, appStorage: AppStorage) 
                 MainScreen(onUnauthorized = onUnauthorized)
             }
             composable<ProfileScreen> {
-                ProfileScreen(onLogout = onUnauthorized, appStorage = appStorage)
+                ProfileScreen(onLogout = onUnauthorized)
             }
         }
     }

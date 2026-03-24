@@ -1,7 +1,7 @@
 package com.example.projectforkts.auth
 
-import com.example.projectforkts.AppStorage
-import com.example.projectforkts.main.data.TokenStorage
+import com.example.projectforkts.core.AppStorage
+import com.example.projectforkts.core.TokenStorage
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.TokenRequest
 

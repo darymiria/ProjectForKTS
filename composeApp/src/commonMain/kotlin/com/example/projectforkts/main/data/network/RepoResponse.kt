@@ -1,4 +1,4 @@
-package com.example.projectforkts.main.data
+package com.example.projectforkts.main.data.network
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
