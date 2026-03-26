@@ -51,5 +51,8 @@ object GitHubApi{
         }.body()
     }
 
+    suspend fun getUserProfile(): UserResponse {
+        return client.get("https://api.github.com/user").body()
+    }
 }
 

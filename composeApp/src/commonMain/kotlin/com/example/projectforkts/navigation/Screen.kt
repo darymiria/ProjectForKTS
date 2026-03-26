@@ -8,3 +8,9 @@ object WelcomeScreen
 object LoginScreen
 @Serializable
 object MainScreen
+@Serializable
+object ReposScreen
+@Serializable
+object ProfileScreen
+@Serializable
+object HomeGraph

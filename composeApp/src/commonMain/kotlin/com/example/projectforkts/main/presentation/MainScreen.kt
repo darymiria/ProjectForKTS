@@ -34,6 +34,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +56,7 @@ fun MainScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val listState = rememberLazyListState()
+    val pullRefreshState = rememberPullToRefreshState()
 
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -73,175 +76,193 @@ fun MainScreen(
             onUnauthorized()
         }
     }
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item{
-            OutlinedTextField(
-                value = state.query,
-                onValueChange = viewModel::onQueryChanged,
-                label = {Text(stringResource(Res.string.search))},
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
-            )
-        }
-        if (state.isFromCache) {
-            item { CacheBanner() }
-        }
-        if (state.isLoading && state.items.isEmpty()) {
-            item {
-                Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-        }
-        if (state.error != null && state.items.isEmpty()) {
-            item {
-                Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
-                    ErrorState(message = state.error!!, onRetry = viewModel::retry)
-                }
-            }
-        }
-        if (state.items.isEmpty() && !state.isLoading && state.error == null) {
-            item {
-                Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
-                    Image(
-                        painter = painterResource(Res.drawable.stars),
-                        contentDescription = null,
-                        modifier = Modifier.size(120.dp)
-                    )
-                    Text(text = stringResource(Res.string.repos_not_found))
-                }
-            }
-        }
-        items(state.items, key = { it.id }) { repo ->
-            RepoItemCard(repo)
-        }
-        if (state.isLoading && state.items.isNotEmpty()) {
-            item {
-                Box(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.size(32.dp))
-                }
-            }
-        }
-    }
-}
 
-@Composable
-fun ErrorState(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = viewModel::refresh,
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = message, color = MaterialTheme.colorScheme.error)
-        Button(onClick = onRetry) { Text(stringResource(Res.string.retry_button)) }
-    }
-}
-
-@Composable
-fun CacheBanner() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
-    ) {
-        Text(
-            text = stringResource(Res.string.cached_data_banner),
-            modifier = Modifier.padding(12.dp),
-            style = MaterialTheme.typography.bodySmall
-        )
-    }
-}
-
-@Composable
-fun RepoItemCard(repo: RepoItem) {
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .safeDrawingPadding(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            AsyncImage(
-                model = repo.avatarUrl,
-                contentDescription = null,
-                modifier = Modifier.size(48.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
-                Text(
-                    text = repo.name,
-                    style = MaterialTheme.typography.titleMedium
+            item {
+                OutlinedTextField(
+                    value = state.query,
+                    onValueChange = viewModel::onQueryChanged,
+                    label = { Text(stringResource(Res.string.search)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
                 )
-                Text(
-                    text = repo.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2
+            }
+            if (state.isFromCache) {
+                item { CacheBanner() }
+            }
+            if (state.isLoading && state.items.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier.fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+            if (state.error != null && state.items.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier.fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ErrorState(message = state.error!!, onRetry = viewModel::retry)
+                    }
+                }
+            }
+            if (state.items.isEmpty() && !state.isLoading && state.error == null) {
+                item {
+                    Box(
+                        modifier = Modifier.fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.stars),
+                            contentDescription = null,
+                            modifier = Modifier.size(120.dp)
+                        )
+                        Text(text = stringResource(Res.string.repos_not_found))
+                    }
+                }
+            }
+            items(state.items, key = { it.id }) { repo ->
+                RepoItemCard(repo)
+            }
+            if (state.isLoading && state.items.isNotEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.size(32.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+        @Composable
+        fun ErrorState(
+            message: String,
+            onRetry: () -> Unit,
+            modifier: Modifier = Modifier
+        ) {
+            Column(
+                modifier = modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(text = message, color = MaterialTheme.colorScheme.error)
+                Button(onClick = onRetry) { Text(stringResource(Res.string.retry_button)) }
+            }
+        }
+
+        @Composable
+        fun CacheBanner() {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
                 )
+            ) {
                 Text(
-                    text = "★${repo.stars}, ${repo.owner}",
+                    text = stringResource(Res.string.cached_data_banner),
+                    modifier = Modifier.padding(12.dp),
                     style = MaterialTheme.typography.bodySmall
                 )
-                repo.language?.let {
-                    Text(
-                        text = "$it",
-                        style = MaterialTheme.typography.bodySmall
+            }
+        }
+
+        @Composable
+        fun RepoItemCard(repo: RepoItem) {
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AsyncImage(
+                        model = repo.avatarUrl,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp)
                     )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = repo.name,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = repo.description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 2
+                        )
+                        Text(
+                            text = "★${repo.stars}, ${repo.owner}",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        repo.language?.let {
+                            Text(
+                                text = "$it",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
                 }
             }
         }
-    }
-}
 
-@Preview(showBackground = true)
-@Preview(uiMode = 0x20)
-@Composable
-private fun RepoItemCardPreview() {
-    GitHubTheme {
-        RepoItemCard(
-            repo = RepoItem(
-                id = 1,
-                name = "KMP PROJECT",
-                description = "Проект для КТС на KMP - GitHub",
-                language = "Kotlin",
-                stars = 40,
-                owner = "Daria"
-            )
-        )
-    }
-}
-@Preview(showBackground = true)
-@Preview(uiMode = 0x20)
-@Composable
-private fun ErrorPreview(){
-    GitHubTheme {
-        ErrorState(
-            message = "Нет подключения к интернету",
-            onRetry = {}
-        )
-    }
-    }
 
-@Preview(showBackground = true)
-@Preview(uiMode = 0x20)
-@Composable
-private fun CachePreview(){
-    GitHubTheme {
-        CacheBanner()
-    }
-}
+//    @Preview(showBackground = true)
+//    @Preview(uiMode = 0x20)
+//    @Composable
+//    private fun RepoItemCardPreview() {
+//        GitHubTheme {
+//            RepoItemCard(
+//                repo = RepoItem(
+//                    id = 1,
+//                    name = "KMP PROJECT",
+//                    description = "Проект для КТС на KMP - GitHub",
+//                    language = "Kotlin",
+//                    stars = 40,
+//                    owner = "Daria"
+//                )
+//            )
+//        }
+//    }
+
+//    @Preview(showBackground = true)
+//    @Preview(uiMode = 0x20)
+//    @Composable
+//    private fun ErrorPreview() {
+//        GitHubTheme {
+//            ErrorState(
+//                message = "Нет подключения к интернету",
+//                onRetry = {}
+//            )
+//        }
+//    }
+
+//    @Preview(showBackground = true)
+//    @Preview(uiMode = 0x20)
+//    @Composable
+//    private fun CachePreview() {
+//        GitHubTheme {
+//            CacheBanner()
+//        }
+//    }
+
