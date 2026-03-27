@@ -27,12 +27,12 @@ import projectforkts.composeapp.generated.resources.light_logo
 import projectforkts.composeapp.generated.resources.login_button
 
 @Composable
-fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    viewModel: LoginViewModel = viewModel()
+fun LoginScreen(onLoginSuccess: () -> Unit,
+                viewModel: LoginViewModel = viewModel()
 ) {
-    val context = LocalContext.current
     val isLoading by viewModel.isLoading.collectAsState(initial = false)
+
+    LoginAuthEffectHandler(onLoginSuccess, viewModel)
 
     val authLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -44,18 +44,15 @@ fun LoginScreen(
             authResponse != null -> viewModel.onAuthCodeReceived(authResponse.createTokenExchangeRequest())
             authException != null -> viewModel.onAuthCodeFailed(authException)
         }
+        
     }
-    LaunchedEffect(Unit) {
-        viewModel.openAuthPageFlow.collect { intent ->
-            authLauncher.launch(intent)
-        }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.authSuccessFlow.collect {
-            onLoginSuccess()
-        }
-    }
-
+    
+    LoginScreenContent(isLoading = isLoading, onLoginClick = { val intent = viewModel.createAuthIntent()
+    authLauncher.launch(intent)}
+    )
+}
+@Composable
+private fun LoginScreenContent(isLoading: Boolean, onLoginClick: () -> Unit ) {
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -75,7 +72,7 @@ fun LoginScreen(
                 CircularProgressIndicator()
             } else {
                 Button(
-                    onClick = viewModel::openLoginPage,
+                    onClick = onLoginClick,
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth().height(52.dp)
                 ) {

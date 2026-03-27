@@ -3,9 +3,11 @@ package com.example.projectforkts.auth
 import android.net.Uri
 import androidx.core.net.toUri
 import net.openid.appauth.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-object AppAuth {
+class AppAuth {
     private val serviceConfiguration = AuthorizationServiceConfiguration(
         Uri.parse(AuthConfig.AUTH_URI),
         Uri.parse(AuthConfig.TOKEN_URI)
@@ -25,24 +27,19 @@ object AppAuth {
     suspend fun performTokenRequestSuspend(
         authService: AuthorizationService,
         tokenRequest: TokenRequest
-    ): TokensModel {
-        return suspendCoroutine { continuation ->
+    ): TokensModel = suspendCoroutine { continuation ->
             authService.performTokenRequest(
                 tokenRequest,
                 getClientAuthentication()
             ) { response, ex ->
                 when {
-                    response != null -> {
-                        continuation.resumeWith(
-                            Result.success(TokensModel(accessToken = response.accessToken.orEmpty()))
-                        )
-                    }
-                    ex != null -> continuation.resumeWith(Result.failure(ex))
+                    ex != null -> continuation.resumeWithException(ex)
+                    response != null -> continuation.resume(TokensModel(accessToken = response.accessToken.orEmpty())
+                    )
                     else -> error("unreachable")
                 }
             }
         }
-    }
 
     private fun getClientAuthentication(): ClientAuthentication {
         return ClientSecretPost(AuthConfig.CLIENT_SECRET)

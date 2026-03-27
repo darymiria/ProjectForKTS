@@ -23,29 +23,18 @@ import com.example.projectforkts.main.data.db.appContext
 import com.example.projectforkts.navigation.LoginScreen
 import com.example.projectforkts.navigation.MainScreen
 import com.example.projectforkts.navigation.WelcomeScreen
+import io.ktor.http.parameters
+import io.ktor.http.parametersOf
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 class MainActivity : ComponentActivity() {
-    private lateinit var authService: AuthorizationService
-    private lateinit var appStorage: AppStorage
+    private val appStorage: AppStorage by inject()
 
-    private val authLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val intent = result.data ?: return@registerForActivityResult
-        val authResponse = AuthorizationResponse.fromIntent(intent)
-        val authException = AuthorizationException.fromIntent(intent)
-        when {
-            authResponse != null -> viewModel.onAuthCodeReceived(authResponse.createTokenExchangeRequest())
-            authException != null -> viewModel.onAuthCodeFailed(authException)
-        }
-    }
-
-    private val viewModel: LoginViewModel by viewModels {LoginViewModel.factory(appStorage) }
     override fun onCreate(savedInstanceState: Bundle?) {
         Napier.base(DebugAntilog())
-        authService = AuthorizationService(this)
-        appStorage = AppStorage(dataStore)
         appContext = applicationContext
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -56,11 +45,15 @@ class MainActivity : ComponentActivity() {
             val savedToken by appStorage.accessToken
                 .collectAsState(initial = null)
             savedToken?.let { TokenStorage.accessToken = it }
-            MainView( startDestination = when {
+            val  startDestination = when {
                 !isOnboardingCompleted -> WelcomeScreen
                 savedToken != null -> MainScreen
                 else -> LoginScreen
-            }, onOnboardingComplete = {
+            }
+            val loginViewModel = koinViewModel<com.example.projectforkts.login.presentation.LoginViewModel>(
+                parameters =  { parametersOf(applicationContext) }
+            )
+            MainView(startDestination = startDestination, onOnboardingComplete = {
                     lifecycleScope.launch {
                         appStorage.setOnboardingCompleted()
                     }
@@ -68,21 +61,10 @@ class MainActivity : ComponentActivity() {
                 appStorage = appStorage,
                 loginScreen = { onLoginSuccess ->
                 LoginScreen(onLoginSuccess = onLoginSuccess,
-                    viewModel = viewModel
+                    viewModel = loginViewModel
                 )
             }
             )
         }
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        authService.dispose()
-    }
 }
-
-
-//@Preview
-//@Composable
-//fun AppAndroidPreview() {
-//    MainView()
-//}
