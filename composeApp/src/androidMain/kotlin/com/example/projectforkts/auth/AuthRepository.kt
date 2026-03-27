@@ -1,11 +1,10 @@
 package com.example.projectforkts.auth
 
-import com.example.projectforkts.AppStorage
 import com.example.projectforkts.main.data.TokenStorage
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.TokenRequest
 
-class AuthRepository(private val appStorage: AppStorage) {
+class AuthRepository {
     fun getAuthRequest() = AppAuth.getAuthRequest()
 
     suspend fun performTokenRequest(
@@ -13,10 +12,10 @@ class AuthRepository(private val appStorage: AppStorage) {
         tokenRequest: TokenRequest
     ) {
         val tokens = AppAuth.performTokenRequestSuspend(authService, tokenRequest)
-        appStorage.saveToken(tokens.accessToken)
+        TokenStorage.accessToken = tokens.accessToken
     }
 
-    suspend fun logout() {
-        appStorage.clearToken()
+    fun logout() {
+        TokenStorage.accessToken = null
     }
 }

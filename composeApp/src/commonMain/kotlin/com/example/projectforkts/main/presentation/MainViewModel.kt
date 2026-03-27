@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projectforkts.main.data.RepoRepositoryImpl
 import com.example.projectforkts.main.domain.RepoRepository
-import com.example.projectforkts.main.domain.UnauthorizedException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,7 +52,7 @@ class MainViewModel(private val repoRepository: RepoRepository = RepoRepositoryI
                                 }
                             }
                             .onFailure { exception ->
-                                if (exception is UnauthorizedException) {
+                                if (exception is RepoRepositoryImpl.UnauthorizedException) {
                                     _unauthorizedEvent.send(Unit)
                                 } else {
                                     _state.update {
@@ -104,34 +103,6 @@ class MainViewModel(private val repoRepository: RepoRepository = RepoRepositoryI
 
     fun retry() {
         _query.value = _state.value.query
-    }
-
-    fun refresh() {
-        viewModelScope.launch {
-            _state.update { it.copy(isRefreshing = true) }
-            repoRepository.searchRepos(_state.value.query, page = 1)
-                .onSuccess { items ->
-                    _state.update {
-                        it.copy(
-                            items = items,
-                            isRefreshing = false,
-                            currentPage = 1,
-                            hasNextPage = items.size == 20,
-                            isFromCache = false,
-                            error = null
-                        )
-                    }
-                }
-                .onFailure { exception ->
-                    _state.update {
-                        it.copy(
-                            isRefreshing = false,
-                            error = exception.message,
-                            isFromCache = it.items.isNotEmpty()
-                        )
-                    }
-                }
-        }
     }
 
     override fun onCleared() {

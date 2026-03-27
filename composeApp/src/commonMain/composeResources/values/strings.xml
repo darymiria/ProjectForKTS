@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ProjectForKTS</string>
     <string name="welcome_title">Добро пожаловать!</string>
-    <string name="start_button">Далее</string>
+    <string name="start_button">Начать</string>
     <string name="login">Логин</string>
     <string name="password">Пароль</string>
     <string name="enter_to_sistem">Вход в систему</string>
@@ -14,11 +14,4 @@
     <string name="retry_button">Повторить</string>
     <string name="loading">Загрузка...</string>
     <string name="search">Поиск</string>
-    <string name="repos_label">Репозитории</string>
-    <string name="followers_label">Подписчики</string>
-    <string name="following_label">Подписки</string>
-    <string name="logout_button">Выйти</string>
-    <string name="profile_label">Профиль</string>
-    <string name="profile_tab">Профиль</string>
-    <string name="repos_tab">Репозитории</string>
 </resources>
