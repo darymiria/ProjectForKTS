@@ -5,19 +5,19 @@ import kotlinx.serialization.SerialName
 
 @Serializable
 data class RepoResponse(
-    val id: Long,
-    val name: String,
-    val description: String? = null,
-    val language: String? = null,
+    @SerialName("id") val id: Long,
+    @SerialName("name") val name: String,
+    @SerialName("description") val description: String? = null,
+    @SerialName("language") val language: String? = null,
     @SerialName("stargazers_count") val stars: Int,
-    val owner: OwnerResponse,
+    @SerialName("owner") val owner: OwnerResponse,
     )
 @Serializable
 data class OwnerResponse(
-    val login: String,
+    @SerialName("login") val login: String,
     @SerialName("avatar_url") val avatarUrl: String
 )
 @Serializable
 data class SearchResponse(
-    val items: List<RepoResponse>
+    @SerialName("items") val items: List<RepoResponse>
 )

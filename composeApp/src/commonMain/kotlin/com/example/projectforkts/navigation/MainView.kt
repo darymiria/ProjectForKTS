@@ -70,38 +70,14 @@ fun MainView(
 @Composable
 fun MainScreenWithBottomNav(onUnauthorized: () -> Unit, appStorage: AppStorage) {
     val bottomNavController = rememberNavController()
-    val currentDestination by bottomNavController.currentBackStackEntryAsState()
+
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = currentDestination?.destination?.hasRoute<ReposScreen>() == true,
-                    onClick = {
-                        bottomNavController.navigate(ReposScreen) {
-                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    icon = {},
-                    label = { Text(stringResource(Res.string.repos_tab)) }
-                )
-                NavigationBarItem(
-                    selected = currentDestination?.destination?.hasRoute<ProfileScreen>() == true,
-                    onClick = {
-                        bottomNavController.navigate(ProfileScreen) {
-                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    icon = {},
-                    label = { Text(stringResource(Res.string.profile_tab)) }
-                )
-            }
+            NavBar(bottomNavController)
         }
-    ) { innerPadding ->
+    )
+    { innerPadding ->
         NavHost(
             navController = bottomNavController,
             startDestination = ReposScreen,
