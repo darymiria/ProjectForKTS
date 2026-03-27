@@ -7,19 +7,20 @@ import org.koin.dsl.module
 import android.app.Application
 import com.example.projectforkts.login.presentation.LoginViewModel
 import io.ktor.http.parameters
+import org.koin.android.ext.koin.androidApplication
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.parameter.parametersOf
 
 val authModule = module {
+    single { AppAuth()}
     single { AuthClient(get(), get()) }
-    single { (app: Application) ->
-        AuthorizationService(app)
-    }
-    viewModel {(application : Application) ->
+    single { AuthorizationService(androidContext()) }
+    viewModel {
         LoginViewModel(
-            application = application,
+            application = androidApplication(),
             authClient = get(),
-            authService = get(parameters = { parametersOf(application) })
+            authService = get()
         )
     }
 }

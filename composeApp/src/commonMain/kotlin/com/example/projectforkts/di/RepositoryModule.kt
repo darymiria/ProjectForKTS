@@ -7,6 +7,6 @@ import com.example.projectforkts.profile.domain.ProfileRepositoryImpl
 import org.koin.dsl.module
 
 val repositoryModule = module{
-    single<RepoRepository> { RepoRepositoryImpl(get()) }
-    single<ProfileRepository> { ProfileRepositoryImpl() }
+    single<RepoRepository> { RepoRepositoryImpl(get(), get()) }
+    single<ProfileRepository> { ProfileRepositoryImpl(get()) }
 }

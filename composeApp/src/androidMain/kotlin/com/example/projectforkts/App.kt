@@ -1,6 +1,7 @@
 package com.example.projectforkts
 
 import android.app.Application
+import com.example.projectforkts.di.authModule
 import com.example.projectforkts.di.dataStoreModule
 import com.example.projectforkts.di.databaseModule
 import com.example.projectforkts.di.networkModule
@@ -20,6 +21,7 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 networkModule,
+                authModule,
                 dataStoreModule,
                 databaseModule,
                 storageModule,

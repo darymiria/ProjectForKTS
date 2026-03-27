@@ -3,10 +3,10 @@ package com.example.projectforkts.profile.domain
 import com.example.projectforkts.main.data.network.GitHubApi
 import com.example.projectforkts.main.data.network.UserResponse
 
-class ProfileRepositoryImpl: ProfileRepository {
+class ProfileRepositoryImpl( private val api: GitHubApi): ProfileRepository {
     override suspend fun getProfile(): Result<UserProfile> {
         return try {
-            val response = GitHubApi.getUserProfile()
+            val response = api.getUserProfile()
             Result.success(response.toDomain())
         } catch (e: Exception) {
             Result.failure(e)

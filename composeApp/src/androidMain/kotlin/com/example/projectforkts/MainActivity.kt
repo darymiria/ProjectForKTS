@@ -50,9 +50,7 @@ class MainActivity : ComponentActivity() {
                 savedToken != null -> MainScreen
                 else -> LoginScreen
             }
-            val loginViewModel = koinViewModel<com.example.projectforkts.login.presentation.LoginViewModel>(
-                parameters =  { parametersOf(applicationContext) }
-            )
+            val loginViewModel = koinViewModel<com.example.projectforkts.login.presentation.LoginViewModel>()
             MainView(startDestination = startDestination, onOnboardingComplete = {
                     lifecycleScope.launch {
                         appStorage.setOnboardingCompleted()
