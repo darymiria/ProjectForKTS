@@ -6,6 +6,8 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.projectforkts.core.AppStorage
 import com.example.projectforkts.auth.AuthRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.trySendBlocking
@@ -22,12 +24,13 @@ import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.TokenRequest
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.initializer
 
 
+class LoginViewModel(application: Application, private val appStorage: AppStorage) : AndroidViewModel(application) {
 
-class LoginViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val authRepository = AuthRepository()
+    private val authRepository = AuthRepository(appStorage)
     private val authService = AuthorizationService(getApplication())
 
     private val openAuthPageChannel = Channel<Intent>(Channel.BUFFERED)
@@ -68,6 +71,17 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         authService.dispose()
+    }
+
+    companion object {
+        fun factory(appStorage: AppStorage) = viewModelFactory {
+            initializer {
+                LoginViewModel(
+                    application = this[APPLICATION_KEY]!!,
+                    appStorage = appStorage
+                )
+            }
+        }
     }
 }
 

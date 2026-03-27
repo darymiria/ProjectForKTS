@@ -1,6 +1,6 @@
 package com.example.projectforkts.main.presentation
 
-import com.example.projectforkts.main.domain.RepoItem
+import com.example.projectforkts.main.domain.model.RepoItem
 
 data class MainUiState(
     val items: List<RepoItem> = emptyList(),
@@ -10,4 +10,5 @@ data class MainUiState(
     val currentPage: Int = 1,
     val hasNextPage: Boolean = true,
     val query: String = "kotlin",
+    val isRefreshing: Boolean = false
 )

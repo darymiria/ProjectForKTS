@@ -1,37 +1,44 @@
 package com.example.projectforkts.main.data
 
-import com.example.projectforkts.main.data.TokenStorage
-import com.example.projectforkts.main.domain.RepoItem
-import com.example.projectforkts.main.domain.RepoRepository
-import io.ktor.client.plugins.ClientRequestException
-import io.ktor.http.HttpStatusCode
+import com.example.projectforkts.main.data.db.AppDatabase
+import com.example.projectforkts.main.data.db.RepoEntity
+import com.example.projectforkts.main.data.db.createDatabase
+import com.example.projectforkts.main.data.network.GitHubApi
+import com.example.projectforkts.main.data.network.RepoResponse
+import com.example.projectforkts.main.domain.model.RepoItem
+import com.example.projectforkts.main.domain.repository.RepoRepository
 
-class RepoRepositoryImpl: RepoRepository {
-    private var cache: List<RepoItem> = emptyList()
+class RepoRepositoryImpl(private val database: AppDatabase = createDatabase()): RepoRepository {
+    private val dao = database.repoDao()
 
     override suspend fun searchRepos(query: String, page: Int): Result<List<RepoItem>> {
         return try {
             val response = GitHubApi.searchRepos(query, page)
             val items = response.items.map { it.toDomain() }
-            cache = items
-            Result.success(items)
-        } catch(e: ClientRequestException){
-            if (e.response.status == HttpStatusCode.Unauthorized) {
-                TokenStorage.accessToken = null // очищаем токен
-                Result.failure(UnauthorizedException())
-            } else {
-                Result.failure(e)
+            if (page == 1) {
+                dao.deleteByQuery(query)
+                dao.insertAll(items.map { it.toEntity(query) })
             }
+            Result.success(items)
         }
         catch (e: Exception) {
-            if (cache.isNotEmpty()) {
-                Result.success(cache)
+            val cached = dao.getReposByQuery(query)
+            if (cached.isNotEmpty()) {
+                Result.success(cached.map { it.toDomain() })
             } else {
                 Result.failure(e)
             }
         }
     }
-    class UnauthorizedException : Exception("Требуется авторизация")
+    private fun RepoEntity.toDomain() = RepoItem(
+        id = id,
+        name = name,
+        description = description,
+        language = language,
+        stars = stars,
+        owner = owner,
+        avatarUrl = avatarUrl
+    )
     private fun RepoResponse.toDomain() = RepoItem(
         id = id,
         name = name,
@@ -40,5 +47,15 @@ class RepoRepositoryImpl: RepoRepository {
         stars = stars,
         owner = owner.login,
         avatarUrl = owner.avatarUrl
+    )
+    private fun RepoItem.toEntity(query: String) = RepoEntity(
+        id = id,
+        name = name,
+        description = description,
+        language = language,
+        stars = stars,
+        owner = owner,
+        avatarUrl = avatarUrl,
+        query = query
     )
 }
