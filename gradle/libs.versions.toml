@@ -79,8 +79,10 @@ koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", ver
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.14" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
-firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebase" }
-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebase" }
+#firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebase" }
+#firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebase" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 
 
 
