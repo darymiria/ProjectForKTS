@@ -21,4 +21,10 @@
     <string name="profile_label">Профиль</string>
     <string name="profile_tab">Профиль</string>
     <string name="repos_tab">Репозитории</string>
+    <string name="files_label">Файлы</string>
+    <string name="stars_label">Звёзды</string>
+    <string name="forks_label">Форки</string>
+    <string name="issues_label">Сущности</string>
+    <string name="language_label">Язык</string>
+    <string name="no_readme">README отсутствует</string>
 </resources>

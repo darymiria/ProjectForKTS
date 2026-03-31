@@ -1,6 +1,7 @@
 package com.example.projectforkts.main.presentation
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import projectforkts.composeapp.generated.resources.Res
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,7 @@ import projectforkts.composeapp.generated.resources.stars
 @Composable
 fun MainScreen(
     onUnauthorized: () -> Unit,
+    onRepoClick: (owner: String, repo: String) -> Unit,
     viewModel: MainViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -140,7 +142,7 @@ fun MainScreen(
                 }
             }
             items(state.items, key = { it.id }) { repo ->
-                RepoItemCard(repo)
+                RepoItemCard(repo = repo, onClick = {onRepoClick(repo.owner, repo.name)})
             }
             if (state.isLoading && state.items.isNotEmpty()) {
                 item {
@@ -188,9 +190,9 @@ fun MainScreen(
         }
 
         @Composable
-        fun RepoItemCard(repo: RepoItem) {
+        fun RepoItemCard(repo: RepoItem, onClick: () -> Unit) {
             Card(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().clickable{onClick()}
             ) {
                 Row(
                     modifier = Modifier.padding(12.dp),
@@ -227,43 +229,4 @@ fun MainScreen(
             }
         }
 
-
-//    @Preview(showBackground = true)
-//    @Preview(uiMode = 0x20)
-//    @Composable
-//    private fun RepoItemCardPreview() {
-//        GitHubTheme {
-//            RepoItemCard(
-//                repo = RepoItem(
-//                    id = 1,
-//                    name = "KMP PROJECT",
-//                    description = "Проект для КТС на KMP - GitHub",
-//                    language = "Kotlin",
-//                    stars = 40,
-//                    owner = "Daria"
-//                )
-//            )
-//        }
-//    }
-
-//    @Preview(showBackground = true)
-//    @Preview(uiMode = 0x20)
-//    @Composable
-//    private fun ErrorPreview() {
-//        GitHubTheme {
-//            ErrorState(
-//                message = "Нет подключения к интернету",
-//                onRetry = {}
-//            )
-//        }
-//    }
-
-//    @Preview(showBackground = true)
-//    @Preview(uiMode = 0x20)
-//    @Composable
-//    private fun CachePreview() {
-//        GitHubTheme {
-//            CacheBanner()
-//        }
-//    }
 

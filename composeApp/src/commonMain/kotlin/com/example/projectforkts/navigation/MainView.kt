@@ -22,14 +22,15 @@ import projectforkts.composeapp.generated.resources.Res
 import projectforkts.composeapp.generated.resources.profile_tab
 import projectforkts.composeapp.generated.resources.repos_tab
 import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.toRoute
 import com.example.projectforkts.core.AppStorage
+import com.example.projectforkts.main.presentation.detail.RepoDetailScreen
 
 @Composable
 fun MainView(
     startDestination: Any = WelcomeScreen,
     loginScreen: @Composable (onLoginSuccess: () -> Unit) -> Unit,
-    onOnboardingComplete: () -> Unit,
-    appStorage: AppStorage
+    onOnboardingComplete: () -> Unit
 ) {
     GitHubTheme {
         val navController = rememberNavController()
@@ -59,16 +60,16 @@ fun MainView(
                         navController.navigate(LoginScreen) {
                             popUpTo(navController.graph.id) { inclusive = true }
                         }
-                    },
-                    appStorage = appStorage
+                    }
                 )
             }
+
         }
     }
 }
 
 @Composable
-fun MainScreenWithBottomNav(onUnauthorized: () -> Unit, appStorage: AppStorage) {
+fun MainScreenWithBottomNav(onUnauthorized: () -> Unit) {
     val bottomNavController = rememberNavController()
 
 
@@ -84,10 +85,24 @@ fun MainScreenWithBottomNav(onUnauthorized: () -> Unit, appStorage: AppStorage) 
             modifier = Modifier.padding(innerPadding)
         ) {
             composable<ReposScreen> {
-                MainScreen(onUnauthorized = onUnauthorized)
+                MainScreen(onUnauthorized = onUnauthorized,
+                    onRepoClick = {owner, repo ->
+                        bottomNavController.navigate(RepoDetailScreen(owner = owner, repo = repo))
+                    })
             }
             composable<ProfileScreen> {
                 ProfileScreen(onLogout = onUnauthorized)
+            }
+            composable<RepoDetailScreen> { backStackEntry ->
+                val screen = backStackEntry.toRoute<RepoDetailScreen>()
+                RepoDetailScreen(
+                    owner = screen.owner,
+                    repo = screen.repo,
+                    onBack = { bottomNavController.popBackStack() },
+                    onUnauthorized = onUnauthorized,
+                    onShare = { url -> /*  */ },
+                    onCreateIssue = { url -> /*  */ }
+                )
             }
         }
     }
