@@ -27,4 +27,8 @@
     <string name="issues_label">Сущности</string>
     <string name="language_label">Язык</string>
     <string name="no_readme">README отсутствует</string>
+    <string name="create_issue_title">Создать сущность</string>
+    <string name="issue_title_label">Заголовок</string>
+    <string name="issue_body_label">Описание</string>
+    <string name="create_issue_button">Создать</string>
 </resources>
