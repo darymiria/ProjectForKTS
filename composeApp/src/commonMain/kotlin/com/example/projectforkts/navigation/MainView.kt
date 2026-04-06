@@ -25,6 +25,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.toRoute
 import com.example.projectforkts.core.AppStorage
 import com.example.projectforkts.main.presentation.detail.RepoDetailScreen
+import com.example.projectforkts.main.presentation.issue.CreateIssueScreen
 
 @Composable
 fun MainView(
@@ -93,7 +94,9 @@ fun MainScreenWithBottomNav(onUnauthorized: () -> Unit) {
             composable<ProfileScreen> {
                 ProfileScreen(onLogout = onUnauthorized)
             }
-            composable<RepoDetailScreen> { backStackEntry ->
+            composable<RepoDetailScreen>(
+                deepLinks = emptyList()
+            ) { backStackEntry ->
                 val screen = backStackEntry.toRoute<RepoDetailScreen>()
                 RepoDetailScreen(
                     owner = screen.owner,
@@ -101,7 +104,16 @@ fun MainScreenWithBottomNav(onUnauthorized: () -> Unit) {
                     onBack = { bottomNavController.popBackStack() },
                     onUnauthorized = onUnauthorized,
                     onShare = { url -> /*  */ },
-                    onCreateIssue = { url -> /*  */ }
+                    onCreateIssue = { bottomNavController.navigate(CreateIssueScreen(owner = screen.owner, repo = screen.repo)) }
+                )
+            }
+            composable<CreateIssueScreen>{
+                backStackEntry ->
+                val screen = backStackEntry.toRoute<CreateIssueScreen>()
+                CreateIssueScreen(
+                    owner = screen.owner,
+                    repo = screen.repo,
+                    onBack = {bottomNavController.popBackStack()}
                 )
             }
         }

@@ -111,8 +111,8 @@ fun RepoDetailScreen(
                     state.details?.let { details -> IconButton(onClick = {onShare(details.htmlUrl)}) {
                         Icon(painter = painterResource(Res.drawable.icon_share), contentDescription = "Поделиться")
                     }
-                        IconButton(onClick = {onCreateIssue(details.htmlUrl)}){
-                            Icon(painter = painterResource(Res.drawable.icon_edit), contentDescription = null)
+                        IconButton(onClick ={ onCreateIssue(details.htmlUrl)}){
+                            Icon(painter = painterResource(Res.drawable.icon_edit), contentDescription = "Создать сущность")
                         }
                     }
                 }

@@ -14,3 +14,6 @@ object ReposScreen
 object ProfileScreen
 @Serializable
 data class RepoDetailScreen(val owner: String, val repo: String)
+
+@Serializable
+data class CreateIssueScreen(val owner: String, val repo: String)

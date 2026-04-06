@@ -40,7 +40,13 @@ class MainViewModel(private val getReposUseCase: GetReposUseCase) : ViewModel() 
         viewModelScope.launch {
             _query
                 .debounce(500L)
-                .collect { query -> search(query) }
+                .collect { query ->
+                    if (query.isBlank()) {
+                        _state.update { it.copy(items = emptyList(), error = null) }
+                    } else {
+                        search(query)
+                    }
+                }
         }
     }
     fun onQueryChanged(query: String) {

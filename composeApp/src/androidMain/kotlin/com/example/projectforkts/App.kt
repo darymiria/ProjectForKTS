@@ -19,7 +19,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         Napier.base(DebugAntilog())
-        Napier.base(CrashlyticsAntilog())
+//        Napier.base(CrashlyticsAntilog())
         appContext = this
         startKoin {
             androidContext(this@App)

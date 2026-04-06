@@ -1,5 +1,6 @@
 package com.example.projectforkts.di
 
+import com.example.projectforkts.main.domain.usecase.CreateIssueUseCase
 import com.example.projectforkts.main.domain.usecase.GetFilesUseCase
 import com.example.projectforkts.main.domain.usecase.GetReadmeUseCase
 import com.example.projectforkts.main.domain.usecase.GetRepoDetailsUseCase
@@ -15,4 +16,5 @@ val useCaseModule = module {
     factory{ GetRepoDetailsUseCase(get()) }
     factory{GetFilesUseCase(get())}
     factory{ GetReadmeUseCase(get()) }
+    factory { CreateIssueUseCase(get()) }
 }

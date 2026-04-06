@@ -16,6 +16,10 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.LoggingConfig
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -67,5 +71,12 @@ class GitHubApi{
 
     suspend fun getFiles(owner: String, repo: String, path: String): List<FileItemResponse>{
         return client.get("https://api.github.com/repos/$owner/$repo/contents/$path").body()
+    }
+
+    suspend fun createIssue(owner: String, repo: String, request: CreateIssueRequestBody): Unit {
+        client.post("https://api.github.com/repos/$owner/$repo/issues") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
     }
 }
