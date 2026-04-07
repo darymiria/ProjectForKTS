@@ -96,7 +96,7 @@ class MainViewModel(private val getReposUseCase: GetReposUseCase) : ViewModel() 
 
     fun loadNextPage() {
         val current = _state.value
-        if (!current.isLoading || !current.hasNextPage) return
+        if (current.isLoading || !current.hasNextPage) return
         search(current.query, current.currentPage + 1)
     }
 
