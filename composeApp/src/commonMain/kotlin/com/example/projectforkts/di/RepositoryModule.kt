@@ -1,8 +1,10 @@
 package com.example.projectforkts.di
 
+import com.example.projectforkts.main.data.FileUploadRepositoryImpl
 import com.example.projectforkts.main.data.IssueRepositoryImpl
 import com.example.projectforkts.main.data.RepoDetailsRepositoryImpl
 import com.example.projectforkts.main.data.RepoRepositoryImpl
+import com.example.projectforkts.main.domain.repository.FileUploadRepository
 import com.example.projectforkts.main.domain.repository.IssueRepository
 import com.example.projectforkts.main.domain.repository.RepoDetailsRepository
 import com.example.projectforkts.main.domain.repository.RepoRepository
@@ -15,4 +17,5 @@ val repositoryModule = module{
     single<ProfileRepository> { ProfileRepositoryImpl(get()) }
     single<RepoDetailsRepository> { RepoDetailsRepositoryImpl(get()) }
     single<IssueRepository>{ IssueRepositoryImpl(get()) }
+    single<FileUploadRepository>{ FileUploadRepositoryImpl(get()) }
 }
