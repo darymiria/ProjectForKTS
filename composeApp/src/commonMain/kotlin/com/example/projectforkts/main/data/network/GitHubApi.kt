@@ -17,10 +17,12 @@ import io.ktor.client.plugins.logging.LoggingConfig
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 class GitHubApi{
@@ -79,4 +81,29 @@ class GitHubApi{
             setBody(request)
         }
     }
+
+    suspend fun getFileSha(owner: String, repo: String, path: String): String? {
+        return try{
+            val response: FileContentResponse = client
+                .get("https://api.github.com/repos/$owner/$repo/contents/$path")
+                .body()
+            response.sha
+        } catch(e: Exception){
+            null
+        }
+    }
+
+    suspend fun uploadFile(
+        owner: String,
+        repo: String,
+        path: String,
+        body: UploadFileRequestBody
+    ) {
+        client.put("https://api.github.com/repos/$owner/$repo/contents/$path") {
+            contentType(ContentType.Application.Json)
+            setBody(body)
+        }
+    }
+    @Serializable
+    data class FileContentResponse(val sha: String)
 }

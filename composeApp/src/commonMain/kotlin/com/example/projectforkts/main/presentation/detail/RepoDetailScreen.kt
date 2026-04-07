@@ -58,7 +58,7 @@ import projectforkts.composeapp.generated.resources.language_label
 import projectforkts.composeapp.generated.resources.no_readme
 import projectforkts.composeapp.generated.resources.retry_button
 import projectforkts.composeapp.generated.resources.stars_label
-
+import projectforkts.composeapp.generated.resources.icon_upload
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepoDetailScreen(
@@ -68,6 +68,7 @@ fun RepoDetailScreen(
     onShare: (String) -> Unit,
     onUnauthorized: () -> Unit,
     onCreateIssue: (String) -> Unit,
+    onUploadFile: () -> Unit,
     viewModel: RepoDetailViewModel = koinViewModel()
 ){
     val state by viewModel.state.collectAsState()
@@ -113,6 +114,9 @@ fun RepoDetailScreen(
                     }
                         IconButton(onClick ={ onCreateIssue(details.htmlUrl)}){
                             Icon(painter = painterResource(Res.drawable.icon_edit), contentDescription = "Создать сущность")
+                        }
+                        IconButton(onClick ={ onUploadFile()}){
+                            Icon(painter = painterResource(Res.drawable.icon_upload), contentDescription = "Загрузить файл")
                         }
                     }
                 }
