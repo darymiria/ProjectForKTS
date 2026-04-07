@@ -133,14 +133,14 @@ fun MainScreen(
             }
             if (state.items.isEmpty() && !state.isLoading && state.error == null) {
                 item {
-                    Box(
-                        modifier = Modifier.fillParentMaxSize(),
-                        contentAlignment = Alignment.Center
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Image(
                             painter = painterResource(Res.drawable.stars),
                             contentDescription = null,
-                            modifier = Modifier.size(120.dp)
+                            modifier = Modifier.size(80.dp)
                         )
                         Text(text = stringResource(Res.string.repos_not_found))
                     }
