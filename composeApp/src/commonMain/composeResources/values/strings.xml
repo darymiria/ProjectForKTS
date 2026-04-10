@@ -36,4 +36,6 @@
     <string name="file_path_label">Путь в репозитории</string>
     <string name="commit_message_label">Сообщение коммита</string>
     <string name="upload_button">Загрузить</string>
+    <string name="favorites_tab">Избранное</string>
+    <string name="no_favorites">Нет избранных репозиториев</string>
 </resources>

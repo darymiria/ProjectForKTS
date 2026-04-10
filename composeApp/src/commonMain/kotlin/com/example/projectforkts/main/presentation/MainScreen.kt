@@ -195,7 +195,11 @@ fun MainScreen(
         }
 
         @Composable
-        fun RepoItemCard(repo: RepoItem, onClick: () -> Unit) {
+        fun RepoItemCard(
+            repo: RepoItem,
+            onClick: () -> Unit,
+            trailingContent: @Composable ( () -> Unit )? = null
+            ) {
             Card(
                 modifier = Modifier.fillMaxWidth().clickable{onClick()}
             ) {
@@ -229,6 +233,7 @@ fun MainScreen(
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
+                        trailingContent?.invoke()
                     }
                 }
             }

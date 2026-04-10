@@ -14,7 +14,9 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.LoggingConfig
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
@@ -103,6 +105,25 @@ class GitHubApi{
             contentType(ContentType.Application.Json)
             setBody(body)
         }
+    }
+
+    suspend fun isStarred(owner: String, repo: String): Boolean {
+        return try {
+            client.get("https://api.github.com/user/starred/$owner/$repo")
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun starRepo(owner: String, repo: String) {
+        client.put("https://api.github.com/user/starred/$owner/$repo"){
+            header("Content-Length", "0")
+        }
+    }
+
+    suspend fun unstarRepo(owner: String, repo: String) {
+        client.delete("https://api.github.com/user/starred/$owner/$repo")
     }
     @Serializable
     data class FileContentResponse(val sha: String)

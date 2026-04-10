@@ -24,6 +24,7 @@ import projectforkts.composeapp.generated.resources.repos_tab
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.toRoute
 import com.example.projectforkts.core.AppStorage
+import com.example.projectforkts.favorites.presentation.FavoritesScreen
 import com.example.projectforkts.main.presentation.detail.RepoDetailScreen
 import com.example.projectforkts.main.presentation.issue.CreateIssueScreen
 import com.example.projectforkts.main.presentation.upload.UploadFileScreen
@@ -91,6 +92,13 @@ fun MainScreenWithBottomNav(onUnauthorized: () -> Unit) {
                     onRepoClick = {owner, repo ->
                         bottomNavController.navigate(RepoDetailScreen(owner = owner, repo = repo))
                     })
+            }
+            composable< FavoritesScreen> {
+                FavoritesScreen(
+                    onRepoClick = {owner, repo ->
+                        bottomNavController.navigate(RepoDetailScreen(owner = owner, repo = repo))
+                    }
+                )
             }
             composable<ProfileScreen> {
                 ProfileScreen(onLogout = onUnauthorized)
