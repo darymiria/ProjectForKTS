@@ -1,10 +1,13 @@
 package com.example.projectforkts.di
 
 import com.example.projectforkts.main.domain.usecase.CreateIssueUseCase
+import com.example.projectforkts.main.domain.usecase.GetFavoritesUseCase
 import com.example.projectforkts.main.domain.usecase.GetFilesUseCase
 import com.example.projectforkts.main.domain.usecase.GetReadmeUseCase
 import com.example.projectforkts.main.domain.usecase.GetRepoDetailsUseCase
 import com.example.projectforkts.main.domain.usecase.GetReposUseCase
+import com.example.projectforkts.main.domain.usecase.IsFavoriteUseCase
+import com.example.projectforkts.main.domain.usecase.ToggleFavoriteUseCase
 import com.example.projectforkts.main.domain.usecase.UploadFileUseCase
 import com.example.projectforkts.profile.domain.GetProfileUseCase
 import com.example.projectforkts.profile.domain.LogoutUseCase
@@ -19,4 +22,7 @@ val useCaseModule = module {
     factory{ GetReadmeUseCase(get()) }
     factory { CreateIssueUseCase(get()) }
     factory { UploadFileUseCase(get()) }
+    factory{ ToggleFavoriteUseCase(get()) }
+    factory{ IsFavoriteUseCase(get()) }
+    factory{ GetFavoritesUseCase(get()) }
 }
