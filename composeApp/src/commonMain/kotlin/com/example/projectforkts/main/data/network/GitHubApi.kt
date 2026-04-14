@@ -19,7 +19,7 @@ import io.ktor.client.request.parameter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-object GitHubApi{
+class GitHubApi{
     private val client = HttpClient {
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
@@ -55,5 +55,17 @@ object GitHubApi{
 
     suspend fun getUserProfile(): UserResponse {
         return client.get("https://api.github.com/user").body()
+    }
+
+    suspend fun getReposDetails( owner: String, repo: String): RepoDetailsResponse {
+        return client.get("https://api.github.com/repos/$owner/$repo").body()
+    }
+
+    suspend fun getReadme(owner: String, repo: String): ReadmeResponse{
+        return client.get("https://api.github.com/repos/$owner/$repo/readme").body()
+    }
+
+    suspend fun getFiles(owner: String, repo: String, path: String): List<FileItemResponse>{
+        return client.get("https://api.github.com/repos/$owner/$repo/contents/$path").body()
     }
 }

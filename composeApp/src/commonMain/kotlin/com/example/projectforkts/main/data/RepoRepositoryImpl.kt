@@ -7,19 +7,23 @@ import com.example.projectforkts.main.data.network.GitHubApi
 import com.example.projectforkts.main.data.network.RepoResponse
 import com.example.projectforkts.main.domain.model.RepoItem
 import com.example.projectforkts.main.domain.repository.RepoRepository
+import io.ktor.utils.io.CancellationException
 
-class RepoRepositoryImpl(private val database: AppDatabase = createDatabase()): RepoRepository {
+class RepoRepositoryImpl(private val api: GitHubApi, private val database: AppDatabase): RepoRepository {
     private val dao = database.repoDao()
 
     override suspend fun searchRepos(query: String, page: Int): Result<List<RepoItem>> {
         return try {
-            val response = GitHubApi.searchRepos(query, page)
+            val response = api.searchRepos(query, page)
             val items = response.items.map { it.toDomain() }
             if (page == 1) {
                 dao.deleteByQuery(query)
                 dao.insertAll(items.map { it.toEntity(query) })
             }
             Result.success(items)
+        }
+        catch(e : CancellationException){
+            throw e
         }
         catch (e: Exception) {
             val cached = dao.getReposByQuery(query)

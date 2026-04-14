@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.projectforkts.profile.domain.GetProfileUseCase
 import com.example.projectforkts.profile.domain.LogoutUseCase
 import com.example.projectforkts.profile.presentation.ProfileUiState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +33,9 @@ class ProfileViewModel(
                 .onSuccess { userProfile ->
                     _state.update { it.copy(isLoading = false, profile = userProfile) }
                 }
-                .onFailure { e -> _state.update { it.copy(isLoading = false, error = e.message) } }
+                .onFailure { e -> if (e is CancellationException) throw e
+                    _state.update { it.copy(isLoading = false, error = e.message)}  }
+
         }
     }
 

@@ -1,6 +1,11 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) load(file.inputStream())
+}
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -8,7 +13,10 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
+//    alias(libs.plugins.googleServices)
+//    alias(libs.plugins.firebaseCrashlytics)
 }
+
 
 kotlin {
    androidTarget {
@@ -16,6 +24,8 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+
+
 
     
 //    listOf(
@@ -37,6 +47,11 @@ kotlin {
             implementation(libs.androidx.browser)
             implementation(libs.datastore.android)
             implementation(libs.koin.android)
+//            implementation(libs.firebase.crashlytics)
+//            implementation(libs.firebase.analytics)
+//            implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+//            implementation("com.google.firebase:firebase-crashlytics-ktx")
+//            implementation("com.google.firebase:firebase-analytics-ktx")
 
         }
         commonMain.dependencies {
@@ -91,20 +106,39 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        create("release") {
+            storeFile = file("releaseKey.jks")
+            storePassword = keystoreProperties["key.store.password"] as String
+            keyAlias = keystoreProperties["key.alias"] as String
+            keyPassword = keystoreProperties["key.password"] as String
+        }
+    }
     buildTypes {
-        getByName("release") {
+        getByName("debug") {
             isMinifyEnabled = false
+        }
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
 }
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
     add("kspAndroid", libs.room.compiler)
+    debugImplementation(libs.leakcanary)
 
 
 }

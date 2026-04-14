@@ -13,4 +13,4 @@ object ReposScreen
 @Serializable
 object ProfileScreen
 @Serializable
-object HomeGraph
+data class RepoDetailScreen(val owner: String, val repo: String)

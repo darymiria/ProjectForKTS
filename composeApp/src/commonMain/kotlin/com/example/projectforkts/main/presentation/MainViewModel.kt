@@ -2,10 +2,13 @@ package com.example.projectforkts.main.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.query
 import com.example.projectforkts.main.data.RepoRepositoryImpl
 import com.example.projectforkts.main.domain.repository.RepoRepository
 import com.example.projectforkts.main.domain.UnauthorizedException
+import com.example.projectforkts.main.domain.model.RepoItem
 import com.example.projectforkts.main.domain.usecase.GetReposUseCase
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,123 +30,81 @@ class MainViewModel(private val getReposUseCase: GetReposUseCase) : ViewModel() 
     private val _state = MutableStateFlow(MainUiState())
     val state: StateFlow<MainUiState> = _state.asStateFlow()
     private val _query = MutableStateFlow("kotlin")
+    private var searchJob: Job? = null
 
+    init{
+        observeQuery()
+    }
+
+    private fun observeQuery() {
+        viewModelScope.launch {
+            _query
+                .debounce(500L)
+                .collect { query -> search(query) }
+        }
+    }
     fun onQueryChanged(query: String) {
         _state.update { it.copy(query = query) }
         _query.value = query
     }
 
-    init {
-        viewModelScope.launch {
-            _query
-                .debounce(500L)
-                .flatMapLatest { query ->
-                    flow {
-                        _state.update { it.copy(isLoading = true, error = null, currentPage = 1) }
-                        getReposUseCase(query, page = 1)
-                            .onSuccess { items ->
-                                _state.update {
-                                    it.copy(
-                                        items = items,
-                                        isLoading = false,
-                                        currentPage = 1,
-                                        hasNextPage = items.size == 20,
-                                        isFromCache = false,
-                                        query = query,
-                                        error = null,
-                                    )
-                                }
-                            }
-                            .onFailure { exception ->
-                                if (exception is UnauthorizedException) {
-                                    _unauthorizedEvent.send(Unit)
-                                } else {
-                                    _state.update {
-                                        it.copy(
-                                            isLoading = false,
-                                            error = exception.message,
-                                            isFromCache = it.items.isNotEmpty()
-                                        )
-                                    }
-                                }
-                            }
-                        emit(Unit)
-                    }
-                }
-                .collect()
+    private fun search(query: String, page: Int=1){
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null, currentPage = page) }
+            getReposUseCase(query, page)
+                .onSuccess { items ->  handleSearchSuccess(items, query, page) }
+                .onFailure { e -> handleFailure(e) }
         }
+
+    }
+    private fun handleSearchSuccess(items: List<RepoItem>, query: String, page: Int ){
+        _state.update {
+            it.copy(
+                items = if (page==1) items else it.items+items,
+                isLoading = false,
+                currentPage = page,
+                hasNextPage = items.size == 20,
+                isFromCache = false,
+                query = query,
+                error = null,
+            )
+        }
+    }
+    private fun handleFailure(e: Throwable){
+        if (e is CancellationException) throw e
+        if (e is UnauthorizedException) {
+            viewModelScope.launch { _unauthorizedEvent.send(Unit) }
+            return
+        }
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    isRefreshing = false,
+                    error = e.message,
+                    isFromCache = it.items.isNotEmpty()
+                )
+            }
     }
 
 
     fun loadNextPage() {
         val current = _state.value
-        if (!current.isLoading && current.hasNextPage) {
-            viewModelScope.launch {
-                _state.update { it.copy(isLoading = true) }
-                getReposUseCase(current.query, current.currentPage + 1)
-                    .onSuccess { newItems ->
-                        _state.update { state ->
-                            state.copy(
-                                items = state.items + newItems,
-                                isLoading = false,
-                                currentPage = state.currentPage + 1,
-                                hasNextPage = newItems.size == 20,
-                            )
-                        }
-                    }
-                    .onFailure { exception ->
-                        if (exception is UnauthorizedException) {
-                            _unauthorizedEvent.send(Unit)
-                        } else {
-                            _state.update {
-                                it.copy(
-                                    isLoading = false,
-                                    error = exception.message,
-                                )
-                            }
-                        }
-                    }
-                    }
-            }
-        }
+        if (!current.isLoading || !current.hasNextPage) return
+        search(current.query, current.currentPage + 1)
+    }
 
         fun retry() {
-            _query.value = _state.value.query
+            search(_state.value.query)
         }
 
         fun refresh() {
-            viewModelScope.launch {
-                _state.update { it.copy(isRefreshing = true) }
-                getReposUseCase(_state.value.query, page = 1)
-                    .onSuccess { items ->
-                        _state.update {
-                            it.copy(
-                                items = items,
-                                isRefreshing = false,
-                                currentPage = 1,
-                                hasNextPage = items.size == 20,
-                                isFromCache = false,
-                                error = null
-                            )
-                        }
-                    }
-                    .onFailure { exception ->
-                        if (exception is UnauthorizedException) {
-                            _unauthorizedEvent.send(Unit)
-                        } else {
-                            _state.update {
-                                it.copy(
-                                    isRefreshing = false,
-                                    error = exception.message,
-                                    isFromCache = it.items.isNotEmpty()
-                                )
-                            }
-                        }
-                        }
-                    }
+            _state.update {it.copy(isRefreshing = true)}
+            search(_state.value.query, page = 1)
             }
 
             override fun onCleared() {
                 super.onCleared()
+                searchJob?.cancel()
             }
         }

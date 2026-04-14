@@ -22,14 +22,15 @@ import projectforkts.composeapp.generated.resources.Res
 import projectforkts.composeapp.generated.resources.profile_tab
 import projectforkts.composeapp.generated.resources.repos_tab
 import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.toRoute
 import com.example.projectforkts.core.AppStorage
+import com.example.projectforkts.main.presentation.detail.RepoDetailScreen
 
 @Composable
 fun MainView(
     startDestination: Any = WelcomeScreen,
     loginScreen: @Composable (onLoginSuccess: () -> Unit) -> Unit,
-    onOnboardingComplete: () -> Unit,
-    appStorage: AppStorage
+    onOnboardingComplete: () -> Unit
 ) {
     GitHubTheme {
         val navController = rememberNavController()
@@ -59,59 +60,49 @@ fun MainView(
                         navController.navigate(LoginScreen) {
                             popUpTo(navController.graph.id) { inclusive = true }
                         }
-                    },
-                    appStorage = appStorage
+                    }
                 )
             }
+
         }
     }
 }
 
 @Composable
-fun MainScreenWithBottomNav(onUnauthorized: () -> Unit, appStorage: AppStorage) {
+fun MainScreenWithBottomNav(onUnauthorized: () -> Unit) {
     val bottomNavController = rememberNavController()
-    val currentDestination by bottomNavController.currentBackStackEntryAsState()
+
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = currentDestination?.destination?.hasRoute<ReposScreen>() == true,
-                    onClick = {
-                        bottomNavController.navigate(ReposScreen) {
-                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    icon = {},
-                    label = { Text(stringResource(Res.string.repos_tab)) }
-                )
-                NavigationBarItem(
-                    selected = currentDestination?.destination?.hasRoute<ProfileScreen>() == true,
-                    onClick = {
-                        bottomNavController.navigate(ProfileScreen) {
-                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    icon = {},
-                    label = { Text(stringResource(Res.string.profile_tab)) }
-                )
-            }
+            NavBar(bottomNavController)
         }
-    ) { innerPadding ->
+    )
+    { innerPadding ->
         NavHost(
             navController = bottomNavController,
             startDestination = ReposScreen,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable<ReposScreen> {
-                MainScreen(onUnauthorized = onUnauthorized)
+                MainScreen(onUnauthorized = onUnauthorized,
+                    onRepoClick = {owner, repo ->
+                        bottomNavController.navigate(RepoDetailScreen(owner = owner, repo = repo))
+                    })
             }
             composable<ProfileScreen> {
                 ProfileScreen(onLogout = onUnauthorized)
+            }
+            composable<RepoDetailScreen> { backStackEntry ->
+                val screen = backStackEntry.toRoute<RepoDetailScreen>()
+                RepoDetailScreen(
+                    owner = screen.owner,
+                    repo = screen.repo,
+                    onBack = { bottomNavController.popBackStack() },
+                    onUnauthorized = onUnauthorized,
+                    onShare = { url -> /*  */ },
+                    onCreateIssue = { url -> /*  */ }
+                )
             }
         }
     }

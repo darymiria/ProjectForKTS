@@ -2,13 +2,17 @@ package com.example.projectforkts.profile.domain
 
 import com.example.projectforkts.main.data.network.GitHubApi
 import com.example.projectforkts.main.data.network.UserResponse
+import io.ktor.utils.io.CancellationException
 
-class ProfileRepositoryImpl: ProfileRepository {
+class ProfileRepositoryImpl( private val api: GitHubApi): ProfileRepository {
     override suspend fun getProfile(): Result<UserProfile> {
         return try {
-            val response = GitHubApi.getUserProfile()
+            val response = api.getUserProfile()
             Result.success(response.toDomain())
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        }
+        catch (e: Exception) {
             Result.failure(e)
         }
     }
