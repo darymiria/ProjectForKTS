@@ -29,6 +29,7 @@ import projectforkts.composeapp.generated.resources.Res
 import projectforkts.composeapp.generated.resources.icon_star
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.IconButton
+import com.example.projectforkts.main.domain.model.RepoItem
 import projectforkts.composeapp.generated.resources.icon_filled_star
 import projectforkts.composeapp.generated.resources.no_favorites
 
@@ -45,51 +46,83 @@ fun FavoritesScreen(
         }
     }
 
-    if (state.items.isEmpty()){
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ){
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Icon(
-                    painter = painterResource(Res.drawable.icon_star),
-                    contentDescription = null,
-                    modifier = Modifier.size(60.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = stringResource(Res.string.no_favorites),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
+    FavoritesContent(
+        items = state.items,
+        onRepoClick = { owner, name -> viewModel.onRepoClick(owner, name) },
+        onRemoveFromFavorite = { repo -> viewModel.removeFromFavorite(repo) }
+    )
+}
+
+@Composable
+private fun FavoritesContent(
+    items: List<RepoItem>,
+    onRepoClick: (owner: String, name: String) -> Unit,
+    onRemoveFromFavorite: (repo: RepoItem) -> Unit
+) {
+    if (items.isEmpty()){
+        EmptyScreen()
     } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .safeDrawingPadding(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(state.items, key = {it.id}) {repo ->
-                RepoItemCard(
-                    repo = repo,
-                    onClick = {viewModel.onRepoClick(repo.owner, repo.name)},
-                    trailingContent = {
-                        IconButton(onClick = { viewModel.removeFromFavorite(repo)}) {
-                            Icon(
-                                painter = painterResource(Res.drawable.icon_filled_star),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
+        SuccessScreen(
+            items = items,
+            onRepoClick = onRepoClick,
+            onRemoveFromFavorite = onRemoveFromFavorite
+        )
+    }
+
+}
+
+@Composable
+private fun EmptyScreen(){
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Icon(
+                painter = painterResource(Res.drawable.icon_star),
+                contentDescription = null,
+                modifier = Modifier.size(60.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(Res.string.no_favorites),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun SuccessScreen(
+    items: List<RepoItem>,
+    onRepoClick: (owner: String, repo: String) -> Unit,
+    onRemoveFromFavorite: (repo: RepoItem) -> Unit
+){
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(items, key = {it.id}) {repo ->
+            RepoItemCard(
+                repo = repo,
+                onClick = {onRepoClick(repo.owner, repo.name)},
+                trailingContent = {
+                    IconButton(onClick = { onRemoveFromFavorite(repo)}) {
+                        Icon(
+                            painter = painterResource(Res.drawable.icon_filled_star),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
-                )
-            }
+                }
+            )
         }
     }
 }

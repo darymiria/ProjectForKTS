@@ -24,6 +24,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.utils.io.CancellationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -90,7 +91,10 @@ class GitHubApi{
                 .get("https://api.github.com/repos/$owner/$repo/contents/$path")
                 .body()
             response.sha
-        } catch(e: Exception){
+        } catch(e: CancellationException){
+            throw e
+        }
+        catch(e: Exception){
             null
         }
     }
