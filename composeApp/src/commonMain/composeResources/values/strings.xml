@@ -27,4 +27,15 @@
     <string name="issues_label">Сущности</string>
     <string name="language_label">Язык</string>
     <string name="no_readme">README отсутствует</string>
+    <string name="create_issue_title">Создать сущность</string>
+    <string name="issue_title_label">Заголовок</string>
+    <string name="issue_body_label">Описание</string>
+    <string name="create_issue_button">Создать</string>
+    <string name="upload_file_title">Загрузить файл</string>
+    <string name="select_file">Выбрать файл</string>
+    <string name="file_path_label">Путь в репозитории</string>
+    <string name="commit_message_label">Сообщение коммита</string>
+    <string name="upload_button">Загрузить</string>
+    <string name="favorites_tab">Избранное</string>
+    <string name="no_favorites">Нет избранных репозиториев</string>
 </resources>

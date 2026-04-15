@@ -24,7 +24,10 @@ import projectforkts.composeapp.generated.resources.repos_tab
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.toRoute
 import com.example.projectforkts.core.AppStorage
+import com.example.projectforkts.favorites.presentation.FavoritesScreen
 import com.example.projectforkts.main.presentation.detail.RepoDetailScreen
+import com.example.projectforkts.main.presentation.issue.CreateIssueScreen
+import com.example.projectforkts.main.presentation.upload.UploadFileScreen
 
 @Composable
 fun MainView(
@@ -90,10 +93,19 @@ fun MainScreenWithBottomNav(onUnauthorized: () -> Unit) {
                         bottomNavController.navigate(RepoDetailScreen(owner = owner, repo = repo))
                     })
             }
+            composable< FavoritesScreen> {
+                FavoritesScreen(
+                    onRepoClick = {owner, repo ->
+                        bottomNavController.navigate(RepoDetailScreen(owner = owner, repo = repo))
+                    }
+                )
+            }
             composable<ProfileScreen> {
                 ProfileScreen(onLogout = onUnauthorized)
             }
-            composable<RepoDetailScreen> { backStackEntry ->
+            composable<RepoDetailScreen>(
+                deepLinks = emptyList()
+            ) { backStackEntry ->
                 val screen = backStackEntry.toRoute<RepoDetailScreen>()
                 RepoDetailScreen(
                     owner = screen.owner,
@@ -101,7 +113,27 @@ fun MainScreenWithBottomNav(onUnauthorized: () -> Unit) {
                     onBack = { bottomNavController.popBackStack() },
                     onUnauthorized = onUnauthorized,
                     onShare = { url -> /*  */ },
-                    onCreateIssue = { url -> /*  */ }
+                    onCreateIssue = { bottomNavController.navigate(CreateIssueScreen(owner = screen.owner, repo = screen.repo)) },
+                    onUploadFile = { bottomNavController.navigate(UploadFileScreen(owner = screen.owner, repo = screen.repo)) }
+                )
+
+            }
+            composable<CreateIssueScreen>{
+                backStackEntry ->
+                val screen = backStackEntry.toRoute<CreateIssueScreen>()
+                CreateIssueScreen(
+                    owner = screen.owner,
+                    repo = screen.repo,
+                    onBack = {bottomNavController.popBackStack()}
+                )
+            }
+            composable< UploadFileScreen>{
+                    backStackEntry ->
+                val screen = backStackEntry.toRoute<UploadFileScreen>()
+                UploadFileScreen(
+                    owner = screen.owner,
+                    repo = screen.repo,
+                    onBack = {bottomNavController.popBackStack()}
                 )
             }
         }

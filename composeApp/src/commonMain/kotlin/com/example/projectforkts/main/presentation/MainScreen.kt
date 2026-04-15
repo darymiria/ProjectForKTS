@@ -29,6 +29,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.projectforkts.ui.GitHubTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -89,8 +94,8 @@ fun MainScreen(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                .safeDrawingPadding(),
-            contentPadding = PaddingValues(16.dp),
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Bottom)),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
@@ -128,14 +133,14 @@ fun MainScreen(
             }
             if (state.items.isEmpty() && !state.isLoading && state.error == null) {
                 item {
-                    Box(
-                        modifier = Modifier.fillParentMaxSize(),
-                        contentAlignment = Alignment.Center
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Image(
                             painter = painterResource(Res.drawable.stars),
                             contentDescription = null,
-                            modifier = Modifier.size(120.dp)
+                            modifier = Modifier.size(80.dp)
                         )
                         Text(text = stringResource(Res.string.repos_not_found))
                     }
@@ -190,7 +195,11 @@ fun MainScreen(
         }
 
         @Composable
-        fun RepoItemCard(repo: RepoItem, onClick: () -> Unit) {
+        fun RepoItemCard(
+            repo: RepoItem,
+            onClick: () -> Unit,
+            trailingContent: @Composable ( () -> Unit )? = null
+            ) {
             Card(
                 modifier = Modifier.fillMaxWidth().clickable{onClick()}
             ) {
@@ -224,6 +233,7 @@ fun MainScreen(
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
+                        trailingContent?.invoke()
                     }
                 }
             }
